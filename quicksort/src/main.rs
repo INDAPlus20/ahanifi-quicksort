@@ -13,9 +13,9 @@ fn main() {
         .map(|_value| _value.parse::<isize>().unwrap())
         .collect();
 
-
+    let len=array.len();
     
-    quicksort(&mut array[..]);
+    quicksort(&mut array[..], 0,len-1);
 
     for elem in array{
         print!("{} ",elem);
@@ -23,40 +23,40 @@ fn main() {
   
 }
 
-fn quicksort(array: &mut [isize]) {
-        let len: usize = array.len();
-        if len <= 1 {
-            return;
-        }
-    
-        let pivot: usize = 0;
-        array.swap(pivot, len / 2);
-    
-        let mut left: usize = 1;
-        let mut right: usize = len - 1;
-    
-        loop {
-            while left < len && array[left] <= array[pivot] {
-                left += 1
-            }
-            while right > 0 && array[right] >= array[pivot] {
-                right -= 1
-            }
-            if left >= right {
-                break;
-            }
-            array.swap(left, right);
+
+fn partition(array:&mut [isize],lo:usize,hi:usize)-> usize{
+
+    let pivot=array[(lo+hi)/2];
+    let mut left: isize = lo as isize-1;
+    let mut right: usize = hi+1;
+
+    loop {
+        left+=1;
+        while array[left as usize] < pivot {
             left += 1;
+        }
+        right -= 1;
+        while array[right] > pivot {
             right -= 1;
         }
-        array.swap(pivot, right);
-
+        if left as usize >= right{
+            return right;
+        }
+        array.swap(left as usize, right);
         
-        let left_partition= &mut array[..cmp::min(left - 1, right)];
-        quicksort(left_partition);
-        let right_partition=&mut array[cmp::max(left, right + 1)..];
-        quicksort(right_partition);
+        
+    }
 }
+
+fn quicksort(array: &mut [isize],lo:usize,hi:usize) {
+       if lo<hi{
+        let pivot=partition(array, lo, hi);
+        quicksort(array, lo, pivot);
+        quicksort(array, pivot+1, hi)
+       }
+}
+
+
 
 fn pause() {
     let mut _t = String::new();
@@ -79,7 +79,7 @@ mod tests {
             let len: usize=rng.gen_range(2..1000);
             let mut array:Vec<isize>=vec![0isize;len];
             rng.fill(&mut array[..]);
-            quicksort(&mut array[..]);
+            quicksort(&mut array[..],0,len-1);
             
             println!("sorted ?? {:?}",array);
             
